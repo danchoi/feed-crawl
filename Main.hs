@@ -15,12 +15,26 @@ import Control.Monad.IO.Class
 import Data.Maybe (listToMaybe)
 import Text.Feed.Crawler
 
+import qualified Control.Exception as E
+
+
 main :: IO ()
 main = do
     url:_ <- getArgs
     request <- parseUrl url
     let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
-    (res, xs) <- withRedirectTracking settings request
-    print xs
-    print . lookup hContentType . responseHeaders $ res
+    res  <- (Just `fmap` (withRedirectTracking settings request))
+        `E.catch` (\e -> do
+                putStrLn "Exception caught"
+                print (e :: HttpException)
+                return Nothing
+            )
+    case res of 
+      Just (resp, xs) -> do
+          print xs
+          print . lookup hContentType . responseHeaders $ resp
+      Nothing -> 
+          putStrLn "No result"
 
+
+-- https://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Exception.html#g:3
