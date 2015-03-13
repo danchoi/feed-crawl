@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards #-} 
-module Text.Feed.Crawler where
+module Text.Feed.Crawl where
 import Network.Connection (TLSSettings(..))
 import Network.HTTP.Conduit
 import qualified Data.Conduit as C

@@ -13,7 +13,7 @@ import Network.HTTP.Types.Status (statusCode)
 import Network.HTTP.Types.Header 
 import Control.Monad.IO.Class
 import Data.Maybe (listToMaybe)
-import Text.Feed.Crawler
+import Text.Feed.Crawl
 
 import qualified Control.Exception as E
 
@@ -32,6 +32,7 @@ main = do
     case res of 
       Just (resp, xs) -> do
           print xs
+          -- response content type
           print . lookup hContentType . responseHeaders $ resp
       Nothing -> 
           putStrLn "No result"

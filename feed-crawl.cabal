@@ -17,7 +17,8 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Text.Feed.Crawler
+  exposed-modules:     Text.Feed.Crawl
+                       Text.Feed.Crawl.DetectLink
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.7 && <4.8
@@ -28,6 +29,7 @@ library
                      , bytestring
                      , transformers
                      , http-types
+                     , hxt
 
   -- hs-source-dirs:      
   default-language:    Haskell2010
@@ -44,5 +46,21 @@ executable feed-crawl
                      , bytestring
                      , transformers
                      , http-types
+                     , hxt
+  default-language:    Haskell2010
+
+executable find-link
+  hs-source-dirs:      . 
+  main-is:             Main2.hs
+  build-depends:       base >=4.6 && <4.8
+                     , feed-crawl
+                     , conduit
+                     , http-conduit >= 2.1.5
+                     , connection
+                     , text
+                     , bytestring
+                     , transformers
+                     , http-types
+                     , hxt
   default-language:    Haskell2010
   
