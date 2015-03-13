@@ -17,7 +17,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  -- exposed-modules:     
+  exposed-modules:     Text.Feed.Crawler
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.7 && <4.8
@@ -36,6 +36,7 @@ executable feed-crawl
   hs-source-dirs:      . 
   main-is:             Main.hs
   build-depends:       base >=4.6 && <4.8
+                     , feed-crawl
                      , conduit
                      , http-conduit >= 2.1.5
                      , connection
