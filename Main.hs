@@ -22,4 +22,5 @@ main = do
     let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
     (res, xs) <- withRedirectTracking settings request
     print xs
+    print . lookup hContentType . responseHeaders $ res
 
