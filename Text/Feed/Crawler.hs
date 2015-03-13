@@ -16,18 +16,15 @@ import Data.Maybe (listToMaybe)
 
 type Location = B.ByteString
 
+-- |Returns a tuple of response and list of redirect locations. 
+--  The first location is the last redirect.
 withRedirectTracking :: ManagerSettings 
                      -> Request 
                      -> IO (Response BL.ByteString, [Location])
 withRedirectTracking settings request = do
     m <- newManager settings
-    r <- myHttp request m
+    r <- runStateT (traceRedirects request m) []
     return r
-
-myHttp :: Request -> Manager -> IO (Response BL.ByteString, [Location])
-myHttp req man = do
-   (res, locations) <- runStateT (traceRedirects req man) []
-   return (res, locations)
 
 traceRedirects :: Request -> Manager -> StateT [Location] IO (Response BL.ByteString)
 traceRedirects req' man = do

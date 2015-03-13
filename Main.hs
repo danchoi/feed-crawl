@@ -20,6 +20,6 @@ main = do
     url:_ <- getArgs
     request <- parseUrl url
     let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
-    res :: (Response BL.ByteString, [Location]) <- withRedirectTracking settings request
-    print res
+    (res, xs) <- withRedirectTracking settings request
+    print xs
 
