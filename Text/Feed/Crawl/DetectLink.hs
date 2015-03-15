@@ -2,23 +2,16 @@
 module Text.Feed.Crawl.DetectLink where
 import Text.XML.HXT.Core 
 import qualified Data.ByteString.Char8 as B
+import Text.Feed.Crawl.Common
 
-data Link = Link {
-    linkRel :: String
-  , linkHref :: String
-  , linkType :: String
-  , linkTitle :: String
-  } deriving Show
-
+findFeedLinks :: String -> IO [Link]
 findFeedLinks input = do
-  let res = runX (
-            readString [
-                  withParseHTML yes
-                ] input 
-            >>>
-            scrapePage 
-            ) 
-  res            
+  runX (
+      readString [
+            withParseHTML yes
+          ] input 
+      >>>
+      scrapePage ) 
 
 scrapePage = 
       deep (isElem >>> hasName "head") >>>

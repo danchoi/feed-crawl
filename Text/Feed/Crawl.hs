@@ -15,6 +15,11 @@ import Network.HTTP.Types.Header
 import Control.Monad.IO.Class
 import Data.Maybe (listToMaybe)
 
+
+crawlFeed :: String 
+          -> IO (Either CrawlFail CrawlSuccess)
+crawlFeed url =  undefined
+
 -- |Returns a tuple of response and list of redirect locations. 
 --  The first location is the last redirect.
 withRedirectTracking :: ManagerSettings 
@@ -24,12 +29,6 @@ withRedirectTracking settings request = do
     m <- newManager settings
     r <- runStateT (traceRedirects request m) []
     return r
-
-data Status = Status {
-      sStatusCode :: Int
-    , sLocation :: Maybe B.ByteString
-    , sContentType :: Maybe B.ByteString
-    } deriving Show
 
 traceRedirects :: Request 
                -> Manager 

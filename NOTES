@@ -13,3 +13,17 @@ Link {linkRel = "alternate", linkHref = "http://fourhourworkweek.com/comments/fe
 Link {linkRel = "alternate", linkHref = "http://fourhourworkweek.com/landing/feed/", linkType = "application/rss+xml", linkTitle = "The Blog of Author Tim Ferriss \187 Landing Comments Feed"}
 Link {linkRel = "alternate", linkHref = "https://public-api.wordpress.com/oembed/1.0/?format=json&url=http%3A%2F%2Ffourhourworkweek.com%2F&for=wpcom-auto-discovery", linkType = "application/json+oembed", linkTitle = ""}
 Link {linkRel = "alternate", linkHref = "https://public-api.wordpress.com/oembed/1.0/?format=xml&url=http%3A%2F%2Ffourhourworkweek.com%2F&for=wpcom-auto-discovery", linkType = "application/xml+oembed", linkTitle = ""}
+  577  dist feed-crawl http://fourhourworkweek.com/landing/feed/
+  579  dist feed-crawl http://fourhourworkweek.com/landing/feed/
+  580  dist feed-crawl http://fourhourworkweek.com/landing/feed/
+  581  dist feed-crawl http://fourhourworkweek.com/landing/feed
+  588  dist feed-crawl http://fourhourworkweek.com/landing/feed
+  589  dist feed-crawl http://fourhourworkweek.com/landing/feed
+  590  dist feed-crawl http://fourhourworkweek.com/landing/feed
+  591  dist feed-crawl http://fourhourworkweek.com/landing/feed
+  592  dist feed-crawl http://fourhourworkweek.com/landing/
+  593  dist feed-crawl http://fourhourworkweek.com
+  596  dist feed-crawl http://fourhourworkweek.com
+  597  dist feed-crawl http://fourhourworkweek.comfg
+  655  h | grep feed-crawl
+  656  h | grep feed-crawl >> NOTES 
