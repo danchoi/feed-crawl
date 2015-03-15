@@ -7,6 +7,7 @@ data Link = Link {
     linkRel :: String
   , linkHref :: String
   , linkType :: String
+  , linkTitle :: String
   } deriving Show
 
 findFeedLinks input = do
@@ -28,6 +29,7 @@ scrapePage =
               rel <- getAttrValue "rel" -< x
               href <- getAttrValue "href" -< x
               typ <- getAttrValue "type" -< x
-              returnA -< Link rel href typ)
+              title <- (getAttrValue "title" `orElse` constA "") -< x
+              returnA -< Link rel href typ title)
       )
 
