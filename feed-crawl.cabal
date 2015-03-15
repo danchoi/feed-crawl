@@ -20,7 +20,7 @@ library
   exposed-modules:     Text.Feed.Crawl
                      , Text.Feed.Crawl.DetectLink
                      , Text.Feed.Crawl.Common
-  build-depends:       base >=4.7 && <4.8
+  build-depends:       base >=4.6 && <4.8
                      , http-conduit >= 2.1.5
                      , conduit
                      , connection
