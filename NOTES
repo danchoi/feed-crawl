@@ -1,0 +1,15 @@
+<link rel="alternate" type="application/rss+xml" title="The Blog of Author Tim Ferriss &raquo; Comments Feed" href="http://fourhourworkweek.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="The Blog of Author Tim Ferriss &raquo; Landing Comments Feed" href="http://fourhourworkweek.com/landing/feed/" />
+
+
+feed-crawl $ dist feed-crawl http://fourhourworkweek.com/landing/feed
+[Status' {sStatusCode = 301, sLocation = Just "http://fourhourworkweek.com/landing/feed/", sContentType = Just "text/html; charset=utf-8"}]
+Just "text/xml; charset=UTF-8"
+feed-crawl $ 
+
+
+Link {linkRel = "alternate", linkHref = "http://fourhourworkweek.com/feed/", linkType = "application/rss+xml"}
+Link {linkRel = "alternate", linkHref = "http://fourhourworkweek.com/comments/feed/", linkType = "application/rss+xml"}
+Link {linkRel = "alternate", linkHref = "http://fourhourworkweek.com/landing/feed/", linkType = "application/rss+xml"}
+Link {linkRel = "alternate", linkHref = "https://public-api.wordpress.com/oembed/1.0/?format=json&url=http%3A%2F%2Ffourhourworkweek.com%2F&for=wpcom-auto-discovery", linkType = "application/json+oembed"}
+Link {linkRel = "alternate", linkHref = "https://public-api.wordpress.com/oembed/1.0/?format=xml&url=http%3A%2F%2Ffourhourworkweek.com%2F&for=wpcom-auto-discovery", linkType = "application/xml+oembed"}
