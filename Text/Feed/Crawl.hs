@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards #-} 
 module Text.Feed.Crawl where
+import Text.Feed.Crawl.Common
 import Network.Connection (TLSSettings(..))
 import Network.HTTP.Conduit
 import qualified Data.Conduit as C
@@ -14,18 +15,17 @@ import Network.HTTP.Types.Header
 import Control.Monad.IO.Class
 import Data.Maybe (listToMaybe)
 
-
 -- |Returns a tuple of response and list of redirect locations. 
 --  The first location is the last redirect.
 withRedirectTracking :: ManagerSettings 
                      -> Request 
-                     -> IO (Response BL.ByteString, [Status'])
+                     -> IO (Response BL.ByteString, [Status])
 withRedirectTracking settings request = do
     m <- newManager settings
     r <- runStateT (traceRedirects request m) []
     return r
 
-data Status' = Status' {
+data Status = Status {
       sStatusCode :: Int
     , sLocation :: Maybe B.ByteString
     , sContentType :: Maybe B.ByteString
@@ -33,7 +33,7 @@ data Status' = Status' {
 
 traceRedirects :: Request 
                -> Manager 
-               -> StateT [Status'] IO (Response BL.ByteString)
+               -> StateT [Status] IO (Response BL.ByteString)
 traceRedirects req' man = do
    let req = req' { checkStatus = \_ _ _ -> Nothing }
    res <- httpLbs req{redirectCount=0} man
@@ -41,7 +41,7 @@ traceRedirects req' man = do
    let location = lookup hLocation . responseHeaders $ res
    case (req2, location) of 
       (Just req2', Just location') -> do
-          let st = Status' {
+          let st = Status {
               sStatusCode = statusCode (responseStatus res)
             , sLocation = lookup hLocation . responseHeaders $ res
             , sContentType = lookup hContentType . responseHeaders $ res
@@ -49,4 +49,8 @@ traceRedirects req' man = do
           modify (st:)
           traceRedirects req2' man
       _ -> return res
+
+isFeed :: Status -> Bool
+isFeed Status{..} = isFeedContentType sContentType 
+
 
