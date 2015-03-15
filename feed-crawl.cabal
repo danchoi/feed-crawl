@@ -3,8 +3,8 @@
 
 name:                feed-crawl
 version:             0.1.0.0
-synopsis:            Feed crawling utilities
--- description:         
+synopsis:            Utility for fetching feeds with redirect info and HTML link detection
+description:         Utility for fetching feeds with redirect info and HTML link detection 
 homepage:            https://github.com/danchoi/feed-crawl
 license:             MIT
 license-file:        LICENSE
