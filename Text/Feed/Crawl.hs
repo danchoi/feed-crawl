@@ -14,19 +14,26 @@ import Network.HTTP.Types.Header
 import Control.Monad.IO.Class
 import Data.Maybe (listToMaybe)
 
-type Location = B.ByteString
 
 -- |Returns a tuple of response and list of redirect locations. 
 --  The first location is the last redirect.
 withRedirectTracking :: ManagerSettings 
                      -> Request 
-                     -> IO (Response BL.ByteString, [Location])
+                     -> IO (Response BL.ByteString, [Status'])
 withRedirectTracking settings request = do
     m <- newManager settings
     r <- runStateT (traceRedirects request m) []
     return r
 
-traceRedirects :: Request -> Manager -> StateT [Location] IO (Response BL.ByteString)
+data Status' = Status' {
+      sStatusCode :: Int
+    , sLocation :: Maybe B.ByteString
+    , sContentType :: Maybe B.ByteString
+    } deriving Show
+
+traceRedirects :: Request 
+               -> Manager 
+               -> StateT [Status'] IO (Response BL.ByteString)
 traceRedirects req' man = do
    let req = req' { checkStatus = \_ _ _ -> Nothing }
    res <- httpLbs req{redirectCount=0} man
@@ -34,8 +41,12 @@ traceRedirects req' man = do
    let location = lookup hLocation . responseHeaders $ res
    case (req2, location) of 
       (Just req2', Just location') -> do
-          let location = lookup hLocation . responseHeaders $ res
-          modify (\locations -> location' : locations)
+          let st = Status' {
+              sStatusCode = statusCode (responseStatus res)
+            , sLocation = lookup hLocation . responseHeaders $ res
+            , sContentType = lookup hContentType . responseHeaders $ res
+            }
+          modify (st:)
           traceRedirects req2' man
       _ -> return res
 
