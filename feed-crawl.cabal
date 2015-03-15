@@ -20,8 +20,6 @@ library
   exposed-modules:     Text.Feed.Crawl
                      , Text.Feed.Crawl.DetectLink
                      , Text.Feed.Crawl.Common
-  -- other-modules:       
-  -- other-extensions:    
   build-depends:       base >=4.7 && <4.8
                      , http-conduit >= 2.1.5
                      , conduit
@@ -35,33 +33,4 @@ library
   -- hs-source-dirs:      
   default-language:    Haskell2010
 
-executable feed-crawl
-  hs-source-dirs:      . 
-  main-is:             Main.hs
-  build-depends:       base >=4.6 && <4.8
-                     , feed-crawl
-                     , conduit
-                     , http-conduit >= 2.1.5
-                     , connection
-                     , text
-                     , bytestring
-                     , transformers
-                     , http-types
-                     , hxt
-  default-language:    Haskell2010
-
-executable find-link
-  hs-source-dirs:      . 
-  main-is:             Main2.hs
-  build-depends:       base >=4.6 && <4.8
-                     , feed-crawl
-                     , conduit
-                     , http-conduit >= 2.1.5
-                     , connection
-                     , text
-                     , bytestring
-                     , transformers
-                     , http-types
-                     , hxt
-  default-language:    Haskell2010
   

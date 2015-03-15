@@ -24,7 +24,6 @@ data Status = Status {
     , sContentType :: Maybe B.ByteString
     } deriving Show
 
-
 data Link = Link {
     linkRel :: String
   , linkHref :: String
