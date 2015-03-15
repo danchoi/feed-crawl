@@ -21,21 +21,7 @@ import qualified Control.Exception as E
 main :: IO ()
 main = do
     url:_ <- getArgs
-    request <- parseUrl url
-    let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
-    res  <- (Just `fmap` (withRedirectTracking settings request))
-        `E.catch` (\e -> do
-                putStrLn "Exception caught"
-                print (e :: HttpException)
-                return Nothing
-            )
-    case res of 
-      Just (resp, xs) -> do
-          print xs
-          -- response content type
-          print . lookup hContentType . responseHeaders $ resp
-      Nothing -> 
-          putStrLn "No result"
-
+    res <- crawlURL url
+    print res
 
 -- https://hackage.haskell.org/package/base-4.7.0.2/docs/Control-Exception.html#g:3

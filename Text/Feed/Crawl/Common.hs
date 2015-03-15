@@ -5,13 +5,15 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import Network.HTTP.Conduit (HttpException)
 
+type CrawlResult = Either CrawlFail CrawlSuccess
+
 data CrawlFail = 
-    FoundFeedLinks [Link] 
-  | HttpError HttpException
+    CrawlFoundFeedLinks [Link] 
+  | CrawlHttpError HttpException
   deriving Show
 
 data CrawlSuccess = CrawlSuccess {
-      crawlLastContentType :: B.ByteString
+      crawlLastContentType :: Maybe B.ByteString
     , crawlLastUrl :: B.ByteString
     , crawlFeedContent :: BL.ByteString
   } deriving Show

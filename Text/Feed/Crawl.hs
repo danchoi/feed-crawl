@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards #-} 
 module Text.Feed.Crawl where
 import Text.Feed.Crawl.Common
+import Text.Feed.Crawl.DetectLink
 import Network.Connection (TLSSettings(..))
 import Network.HTTP.Conduit
 import qualified Data.Conduit as C
@@ -13,12 +14,33 @@ import Control.Monad.Trans.Class (lift)
 import Network.HTTP.Types.Status (statusCode)
 import Network.HTTP.Types.Header 
 import Control.Monad.IO.Class
-import Data.Maybe (listToMaybe)
+import Data.Maybe (listToMaybe, catMaybes)
+import qualified Control.Exception as E
 
+crawlURL :: String 
+          -> IO CrawlResult
+crawlURL url = do
+    request <- parseUrl url
+    let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
+    (mkCrawlResult url =<< withRedirectTracking settings request)
+      `E.catch` (\e -> return . Left . CrawlHttpError $ e)
+    
 
-crawlFeed :: String 
-          -> IO (Either CrawlFail CrawlSuccess)
-crawlFeed url =  undefined
+mkCrawlResult :: String -> (Response BL.ByteString, [Status]) -> IO CrawlResult
+mkCrawlResult firstUrl (resp, statuses) = do
+  let ct = lookup hContentType . responseHeaders $ resp
+  let loc = lookup hLocation . responseHeaders $ resp
+  let urls = catMaybes [ sLocation | Status{..}  <- statuses ]
+  if isFeedContentType ct 
+      then return . Right $ CrawlSuccess {
+                    crawlLastContentType = ct
+                  , crawlLastUrl = head (urls ++ [B.pack firstUrl])
+                  , crawlFeedContent = responseBody resp
+                  }
+      else do
+          links <- findFeedLinks (BL.unpack . responseBody $ resp)
+          return . Left $ CrawlFoundFeedLinks links
+        
 
 -- |Returns a tuple of response and list of redirect locations. 
 --  The first location is the last redirect.
