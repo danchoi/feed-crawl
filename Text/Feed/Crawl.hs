@@ -17,6 +17,7 @@ import Control.Monad.IO.Class
 import Data.Maybe (listToMaybe, catMaybes)
 import qualified Control.Exception as E
 
+-- |The main function
 crawlURL :: String 
           -> IO CrawlResult
 crawlURL url = do
