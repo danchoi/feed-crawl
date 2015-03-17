@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                feed-crawl
-version:             0.1.0.0
+version:             0.1.1.0
 synopsis:            Utility for fetching feeds with redirect info and HTML link detection
 description:         Utility for fetching feeds with redirect info and HTML link detection 
 homepage:            https://github.com/danchoi/feed-crawl
