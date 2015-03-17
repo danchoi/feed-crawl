@@ -36,16 +36,26 @@ mkCrawlResult firstUrl (resp, statuses) = do
   let ct = lookup hContentType . responseHeaders $ resp
   let loc = lookup hLocation . responseHeaders $ resp
   let urls = catMaybes [ sLocation | Status{..}  <- statuses ]
+  let lastUrl = head (urls ++ [B.pack firstUrl])
   if isFeedContentType ct 
       then return . Right $ CrawlSuccess {
                     crawlLastContentType = ct
-                  , crawlLastUrl = head (urls ++ [B.pack firstUrl])
+                  , crawlLastUrl = lastUrl
                   , crawlFeedContent = responseBody resp
                   }
       else do
           links <- findFeedLinks (BL.unpack . responseBody $ resp)
-          return . Left $ CrawlFoundFeedLinks links
-        
+          -- TODO this ignore any the <base> tag in the html page
+          return . Left . CrawlFoundFeedLinks 
+                 . map (ensureLinkIsAbsolute lastUrl) $ links
+  where ensureLinkIsAbsolute :: B.ByteString -> Link -> Link
+        ensureLinkIsAbsolute linkBaseUrl x@Link{..} = 
+            let linkHref' = 
+                  maybe linkHref id
+                    $ ensureAbsURL' 
+                        (parseURI . B.unpack $ linkBaseUrl) 
+                        linkHref
+            in x { linkHref = linkHref' }
 
 -- |Returns a tuple of response and list of redirect locations. 
 --  The first location is the last redirect.
@@ -67,19 +77,7 @@ traceRedirects req' man = do
    let location = lookup hLocation . responseHeaders $ res
    case (req2, location) of 
       (Just req2', Just location') -> do
-          -- location might be relative path
-          let sLocation = B.unpack `fmap` location
-          let location' =
-                case sLocation of
-                  Nothing -> Nothing
-                  Just sLocation' -> 
-                    case parseURI sLocation' of
-                      Just _ -> location -- is a valid full URI
-                      Nothing ->  
-                        (\x -> B.pack $ uriToString id x "") <$> 
-                          (nonStrictRelativeTo 
-                                <$> (parseRelativeReference sLocation')
-                                <*> (baseURL req))
+          let location' = ensureAbsURL req location
           let st = Status {
               sStatusCode = statusCode (responseStatus res)
             , sLocation = location' 
@@ -91,6 +89,23 @@ traceRedirects req' man = do
 
 isFeed :: Status -> Bool
 isFeed Status{..} = isFeedContentType sContentType 
+
+ensureAbsURL :: Request -> Maybe B.ByteString -> Maybe B.ByteString
+ensureAbsURL req url = 
+    let sUrl = B.unpack `fmap` url
+    in case sUrl of
+        Nothing    -> Nothing
+        Just sUrl' -> B.pack <$> ensureAbsURL' (baseURL req) sUrl'
+
+ensureAbsURL' :: Maybe URI -> String -> Maybe String
+ensureAbsURL' baseURI s = 
+    case parseURI s of
+      Just _  -> Just s   -- is a valid full URI
+      Nothing ->     -- url may be relative path, join to request info
+        (\x -> uriToString id x "") 
+          <$> (nonStrictRelativeTo 
+                <$> (parseRelativeReference s)
+                <*> baseURI)
 
 baseURL :: Request -> Maybe URI
 baseURL req = 
