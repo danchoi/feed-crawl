@@ -16,6 +16,10 @@ import Network.HTTP.Types.Header
 import Control.Monad.IO.Class
 import Data.Maybe (listToMaybe, catMaybes)
 import qualified Control.Exception as E
+import Network.URI
+import Control.Applicative 
+import Data.Monoid
+import Control.Monad (join)
 
 -- |The main function
 crawlURL :: String 
@@ -63,9 +67,22 @@ traceRedirects req' man = do
    let location = lookup hLocation . responseHeaders $ res
    case (req2, location) of 
       (Just req2', Just location') -> do
+          -- location might be relative path
+          let sLocation = B.unpack `fmap` location
+          let location' =
+                case sLocation of
+                  Nothing -> Nothing
+                  Just sLocation' -> 
+                    case parseURI sLocation' of
+                      Just _ -> location -- is a valid full URI
+                      Nothing ->  
+                        (\x -> B.pack $ uriToString id x "") <$> 
+                          (nonStrictRelativeTo 
+                                <$> (parseRelativeReference sLocation')
+                                <*> (baseURL req))
           let st = Status {
               sStatusCode = statusCode (responseStatus res)
-            , sLocation = lookup hLocation . responseHeaders $ res
+            , sLocation = location' 
             , sContentType = lookup hContentType . responseHeaders $ res
             }
           modify (st:)
@@ -75,4 +92,14 @@ traceRedirects req' man = do
 isFeed :: Status -> Bool
 isFeed Status{..} = isFeedContentType sContentType 
 
+baseURL :: Request -> Maybe URI
+baseURL req = 
+    let protocol = if secure req then "https://" else "http://"
+    in parseURI $ mconcat [
+                    protocol
+                  , B.unpack . host $ req
+                  , case port req of 
+                      80 -> "" 
+                      n -> ":" ++ show n
+                  ]
 

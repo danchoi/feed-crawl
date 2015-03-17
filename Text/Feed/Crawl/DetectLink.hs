@@ -13,6 +13,7 @@ findFeedLinks input = do
       >>>
       scrapePage ) 
 
+-- TODO fix relative links
 scrapePage = 
       deep (isElem >>> hasName "head") >>>
       deep (isElem 
