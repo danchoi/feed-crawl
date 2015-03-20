@@ -9,6 +9,7 @@ findFeedLinks input = do
   runX (
       readString [
             withParseHTML yes
+          , withWarnings no
           ] input 
       >>>
       scrapePage ) 
