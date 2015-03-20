@@ -21,13 +21,20 @@ import Control.Applicative
 import Data.Monoid
 import Control.Monad (join)
 
+-- | Spoof a Safari Browser because some sites don't even serve feeds to 
+--   an http-conduit client
+userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A"
+
 -- |The main function
 crawlURL :: String 
           -> IO CrawlResult
 crawlURL url = do
     request <- parseUrl url
+    let request' = request {
+          requestHeaders = ("User-Agent", userAgent):(requestHeaders request)
+        }
     let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
-    (mkCrawlResult url =<< withRedirectTracking settings request)
+    (mkCrawlResult url =<< withRedirectTracking settings request')
       `E.catch` (\e -> return . Left . CrawlHttpError $ e)
     
 
@@ -46,7 +53,7 @@ mkCrawlResult firstUrl (resp, statuses) = do
       else do
           links <- findFeedLinks (BL.unpack . responseBody $ resp)
           -- TODO this ignore any the <base> tag in the html page
-          return . Left . CrawlFoundFeedLinks 
+          return . Left . CrawlFoundFeedLinks (responseBody resp)
                  . map (ensureLinkIsAbsolute lastUrl) $ links
   where ensureLinkIsAbsolute :: B.ByteString -> Link -> Link
         ensureLinkIsAbsolute linkBaseUrl x@Link{..} = 

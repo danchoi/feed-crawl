@@ -8,7 +8,10 @@ import Network.HTTP.Conduit (HttpException)
 type CrawlResult = Either CrawlFail CrawlSuccess
 
 data CrawlFail = 
-    CrawlFoundFeedLinks [Link] 
+    CrawlFoundFeedLinks {
+      crawlNotFeedResponse :: BL.ByteString
+    , crawlNotFeedWithLinks :: [Link] 
+    }
   | CrawlHttpError HttpException
   deriving Show
 
