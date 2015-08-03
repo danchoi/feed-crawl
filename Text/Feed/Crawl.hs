@@ -21,6 +21,13 @@ import Control.Applicative
 import Data.Monoid
 import Control.Monad (join)
 
+
+test :: String -> IO ()
+test url = do
+    r <- crawlURL url 
+    print r
+
+
 -- | Spoof a Safari Browser because some sites don't even serve feeds to 
 --   an http-conduit client
 userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A"
